@@ -41,3 +41,14 @@ FROM country c
 JOIN global_covid_stats gc
     on c.country_id=gc.country_id
 GROUP BY gc.report_date;
+
+-- UC5 :
+-- Find the maximum number of active cases recorded in any country on a specific date.
+
+SELECT c.name , gc.report_date , gc.active_cases
+FROM country c 
+JOIN global_covid_stats gc
+    on c.country_id=gc.country_id
+WHERE gc.report_date='2020-09-30'
+ORDER BY gc.active_cases DESC
+LIMIT 1;
