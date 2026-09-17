@@ -23,3 +23,12 @@ JOIN state as s
 WHERE cs.report_date='2021-03-31'
 GROUP BY c.name,s.name
 ORDER BY SUM(cs.deaths) DESC;
+
+-- UC3 :
+-- List the continents along with the total number of confirmed cases, deaths, and recoveries.
+
+SELECT c.continent,SUM(gc.confirmed),SUM(gc.deaths),SUM(gc.recovered)
+FROM country c
+JOIN global_covid_stats gc
+    on c.country_id=gc.country_id
+GROUP BY c.continent;
