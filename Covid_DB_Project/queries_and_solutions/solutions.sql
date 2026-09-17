@@ -32,3 +32,12 @@ FROM country c
 JOIN global_covid_stats gc
     on c.country_id=gc.country_id
 GROUP BY c.continent;
+
+-- UC4 :
+-- Calculate the average number of new deaths per day across all countries.
+
+SELECT gc.report_date,ROUND(AVG(gc.new_deaths),2)
+FROM country c
+JOIN global_covid_stats gc
+    on c.country_id=gc.country_id
+GROUP BY gc.report_date;
