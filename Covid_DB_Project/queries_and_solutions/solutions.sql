@@ -343,3 +343,25 @@ JOIN death_country
 GROUP BY c.continent
 ORDER BY SUM(death_country.dt) DESC;
 
+
+-- Queries on Vaccination:
+-- Total vaccinated with at least 1 dose over time (All countries)
+
+SELECT SUM(mx)
+from (SELECT MAX(first_dose) AS mx
+FROM vaccination
+GROUP BY state_id) as ab;
+
+-- Percentage of the population vaccinated with at least the first dose until 30/9/2021 
+
+WITH total_vaccinated as (
+	SELECT MAX(v.first_dose) AS mx, v.state_id as st_id,s.population as pop
+	FROM vaccination as v
+	JOIN state as s
+		ON s.state_id=v.state_id
+	WHERE v.date<='2021/09/30'
+	GROUP BY v.state_id,s.population
+)
+select SUM(total_vaccinated.mx)*100/SUM(total_vaccinated.pop)
+from total_vaccinated;
+
