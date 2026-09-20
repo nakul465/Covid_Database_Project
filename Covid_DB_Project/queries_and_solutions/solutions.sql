@@ -260,3 +260,86 @@ FROM country c
 JOIN global_covid_stats gc
     on c.country_id=gc.country_id
 GROUP BY c.name;
+
+
+-- Covid-Data-Global :
+
+-- To find out the death percentage locally and globally
+-- globally :
+
+SELECT SUM(new_deaths)*100/SUM(new_confirmed)
+FROM global_covid_stats;
+
+-- locally :
+SELECT SUM(gc.new_deaths)*100/SUM(gc.new_confirmed)
+FROM country c
+JOIN global_covid_stats gc 
+    ON c.country_id=gc.country_id
+GROUP BY c.name;
+
+-- To find out the infected population percentage locally and globally
+-- globally
+
+WITH infected_population AS (
+    SELECT c.country_id,SUM(gc.new_confirmed) as total
+    FROM country as c
+    JOIN global_covid_stats gc
+        ON c.country_id=gc.country_id
+    GROUP BY c.country_id
+)
+SELECT SUM(infected_population.total)*100/SUM(c.population)
+FROM country c
+JOIN infected_population 
+    ON c.country_id=infected_population.country_id;
+
+-- Locally
+
+WITH infected_population AS (
+    SELECT c.country_id,SUM(gc.new_confirmed) as total
+    FROM country as c
+    JOIN global_covid_stats gc
+        ON c.country_id=gc.country_id
+    GROUP BY c.country_id
+)
+SELECT c.name,infected_population.total*100/c.population
+FROM country c
+JOIN infected_population 
+    ON c.country_id=infected_population.country_id;
+
+-- To find out the countries with the highest infection rates
+
+WITH infected_population AS (
+    SELECT c.country_id,SUM(gc.new_confirmed) as total
+    FROM country as c
+    JOIN global_covid_stats gc
+        ON c.country_id=gc.country_id
+    GROUP BY c.country_id
+)
+SELECT c.name,infected_population.total*100/c.population as infection_rate
+FROM country c
+JOIN infected_population 
+    ON c.country_id=infected_population.country_id
+ORDER BY infection_rate DESC;
+
+-- To find out the countries and continents with the highest death counts
+-- countries
+
+SELECT country_id,MAX(deaths)
+FROM global_covid_stats
+GROUP BY country_id
+ORDER BY MAX(deaths) DESC;
+
+-- continents
+
+WITH death_country AS(
+    SELECT country_id,MAX(deaths) as dt
+    FROM global_covid_stats
+    GROUP BY country_id
+)
+SELECT c.continent,SUM(death_country.dt)
+FROM country as c
+JOIN death_country
+    ON c.country_id=death_country.country_id
+GROUP BY c.continent
+ORDER BY SUM(death_country.dt) DESC;
+
