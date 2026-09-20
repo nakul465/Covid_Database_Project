@@ -94,3 +94,29 @@ BEGIN
 
 END;
 $$
+
+-- Views:
+
+-- UC8 :
+-- Create a view that displays the total number of cases (confirmed, deaths, and recovered) for each country on a specific date.
+
+CREATE VIEW total_cases_view AS
+SELECT c.name , gc.confirmed,gc.deaths,gc.recovered
+FROM country c
+JOIN global_covid_stats gc
+    ON c.country_id=gc.country_id
+WHERE gc.report_date='2020-09-30';
+
+-- UC9 :
+-- Implement a view to show the latest data (confirmed, deaths, recovered) for each country.
+
+CREATE VIEW latest_data_view AS
+SELECT c.name , gc.confirmed,gc.deaths,gc.recovered
+FROM country c
+JOIN global_covid_stats gc
+    ON c.country_id=gc.country_id
+WHERE gc.report_date =
+(
+SELECT MAX(report_date) 
+FROM global_covid_stats
+)
