@@ -365,3 +365,50 @@ WITH total_vaccinated as (
 select SUM(total_vaccinated.mx)*100/SUM(total_vaccinated.pop)
 from total_vaccinated;
 
+
+-- Using JOINS to combine the covid_deaths and covid_vaccine tables :
+
+-- To find out the population vs the number of people vaccinated
+
+WITH total_vaccinated as (
+	SELECT MAX(v.first_dose) AS mx, v.state_id as st_id,s.population as pop
+	FROM vaccination as v
+	JOIN state as s
+		ON s.state_id=v.state_id
+	WHERE v.date<='2021/09/30'
+	GROUP BY v.state_id,s.population
+)
+select SUM(total_vaccinated.mx) as Total_Person_Vaccinated,SUM(total_vaccinated.pop) as Total_Population
+from total_vaccinated;
+
+-- To find out the percentage of different vaccine taken by people in a country
+
+WITH total_vaccinated as (
+	SELECT MAX(v.covaxin) AS covax,
+           MAX(v.covishield) as covi, 
+           MAX(sputnik_v) as sput,
+           v.state_id as st_id,
+           s.population as pop
+	FROM vaccination as v
+	JOIN state as s
+		ON s.state_id=v.state_id
+	GROUP BY v.state_id,s.population
+)
+select  SUM(total_vaccinated.covax)*100/SUM(total_vaccinated.pop) as Covaxin_Vaccinated,
+		SUM(total_vaccinated.covi)*100/SUM(total_vaccinated.pop)  as Covishield_Vaccinated,
+		SUM(total_vaccinated.sput)*100/SUM(total_vaccinated.pop)  as Sputnik_Vaccinated
+from total_vaccinated;
+
+-- To find out percentage of people who took both the doses
+
+WITH total_vaccinated as (
+	SELECT MAX(v.second_dose) AS mx, v.state_id as st_id,s.population as pop
+	FROM vaccination as v
+	JOIN state as s
+		ON s.state_id=v.state_id
+	GROUP BY v.state_id,s.population
+)
+select SUM(total_vaccinated.mx)*100/SUM(total_vaccinated.pop)
+from total_vaccinated;
+
+
