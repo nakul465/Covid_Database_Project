@@ -120,3 +120,46 @@ WHERE gc.report_date =
 SELECT MAX(report_date) 
 FROM global_covid_stats
 )
+
+-- CTE (Common Table Expressions):
+
+-- UC12 :
+-- Create a CTE to calculate the percentage increase in confirmed cases for each country over the past week.
+-- as the difference between the date in data was not in gaps of a week i took 2 dates that existed in data
+
+WITH Initial_Dates as(
+    SELECT c.name as cont_name,gc.confirmed as confirmed_cases
+    FROM country as c
+    JOIN global_covid_stats as gc
+        ON gc.country_id = c.country_id
+    WHERE gc.report_date='2020-06-30'
+),
+Final_Dates as(
+    SELECT c.name as cont_name,gc.confirmed as confirmed_cases
+    FROM country as c
+    JOIN global_covid_stats as gc
+        ON gc.country_id = c.country_id
+    WHERE gc.report_date='2020-09-30'
+)
+SELECT 
+    Initial_Dates.cont_name,
+    (Final_Dates.confirmed_cases-Initial_Dates.confirmed_cases)*100/Initial_Dates.confirmed_cases
+    FROM Initial_Dates
+    JOIN Final_Dates
+        ON Initial_Dates.cont_name=Final_Dates.cont_name;
+
+-- UC13 :
+-- Use a CTE to find the country with the highest number of active cases at the moment.
+
+WITH active AS (
+    SELECT 
+    c.name AS cont_name,
+    gc.active_cases as ac,
+    gc.report_date as rp
+    FROM country AS c
+    JOIN global_covid_stats as gc
+        on c.country_id=gc.country_id
+)
+select cont_name,MAX(ac) from active
+order by ac desc limit 1; 
+
