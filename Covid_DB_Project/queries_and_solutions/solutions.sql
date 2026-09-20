@@ -1,3 +1,4 @@
+-- Joins
 -- UC1 :
 -- Which country has the highest number of confirmed cases on a specific date?
 
@@ -52,3 +53,44 @@ JOIN global_covid_stats gc
 WHERE gc.report_date='2020-09-30'
 ORDER BY gc.active_cases DESC
 LIMIT 1;
+
+-- Stored Procedure:
+-- UC6 :
+-- Create a stored procedure that returns the total number of recovered cases for a given country and date.
+
+CREATE PROCEDURE recovered_cases(
+    INOUT p_date date,
+    INOUT p_name text,
+	OUT p_recovered INT
+)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+
+    SELECT gc.recovered INTO p_recovered
+    FROM country as c
+    JOIN global_covid_stats as gc
+        ON c.country_id=gc.country_id
+    WHERE gc.report_date=p_date AND c.name=p_name;
+
+END;
+$$
+
+-- UC7 :
+-- Design a stored procedure to update the number of deaths for a specific country and date.
+
+CREATE PROCEDURE recovered_cases(
+    IN p_date date,
+    IN p_country_id INT,
+	IN p_updated_deaths INT
+)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+
+    UPDATE global_covid_stats 
+    SET deaths=p_updated_deaths
+    WHERE country_id=p_country_id AND report_date=p_date;
+
+END;
+$$
