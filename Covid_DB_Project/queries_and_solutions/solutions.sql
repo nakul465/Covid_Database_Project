@@ -163,3 +163,20 @@ WITH active AS (
 select cont_name,MAX(ac) from active
 order by ac desc limit 1; 
 
+-- Indexes
+
+-- UC14 :
+-- Explain the importance of indexes in optimizing queries for this dataset.
+
+-- Indexes improve query performance by allowing the database to locate required records 
+-- quickly instead of scanning the entire table. In the COVID-19 dataset, indexes on frequently 
+-- searched and joined columns such as country_id and report_date can significantly improve the
+-- performance of queries, joins, and updates. However, indexes also require additional storage 
+-- and can slightly slow down INSERT, UPDATE, and DELETE operations, so they should be created 
+-- on columns that are frequently used in queries.
+
+-- UC15 :
+-- Implement an index on the "Country/Region" column to speed up search operations.
+
+CREATE INDEX country_index
+ON global_covid_stats (country_id);
