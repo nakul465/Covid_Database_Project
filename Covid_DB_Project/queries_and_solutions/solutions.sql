@@ -232,3 +232,31 @@ BEGIN
 
 END;
 $$;
+
+
+-- GROUP BY
+
+-- UC18 :
+-- Group the data by continent and calculate the total number of confirmed cases for each continent.
+
+SELECT c.continent,SUM(gc.confirmed)
+FROM country c
+JOIN global_covid_stats gc
+    on c.country_id=gc.country_id
+GROUP BY  c.continent;
+
+-- UC19 :
+-- Group the data by date and compute the total number of deaths and recoveries for each date.
+
+SELECT report_date,SUM(deaths),SUM(recovered)
+FROM global_covid_stats 
+GROUP BY  report_date;
+
+-- UC20 :
+-- Group the data by country and calculate the average number of new cases reported daily for each country.
+
+SELECT c.name,ROUND(AVG(gc.new_confirmed), 2) 
+FROM country c
+JOIN global_covid_stats gc
+    on c.country_id=gc.country_id
+GROUP BY c.name;
