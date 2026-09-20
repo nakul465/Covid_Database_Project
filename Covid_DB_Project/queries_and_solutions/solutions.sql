@@ -180,3 +180,55 @@ order by ac desc limit 1;
 
 CREATE INDEX country_index
 ON global_covid_stats (country_id);
+
+
+-- User-Defined Functions (UDF):
+
+-- UC16 :
+-- Develop a UDF to calculate the mortality rate (deaths / confirmed cases * 100) for a given country.
+
+CREATE FUNCTION martality_rate(
+    f_name text
+)
+RETURNS numeric
+LANGUAGE plpgsql
+AS $$
+DECLARE 
+    mortality numeric;
+BEGIN 
+    SELECT SUM(gc.new_deaths)*100.0/SUM(gc.new_confirmed) INTO mortality
+    FROM country c
+    JOIN global_covid_stats gc
+        ON gc.country_id=c.country_id
+    WHERE c.name=f_name;
+
+    RETURN mortality;
+END;
+$$
+
+-- UC17 :
+-- Create a UDF to determine the recovery rate (recovered / confirmed cases * 100) for a specific date.
+
+CREATE FUNCTION recovery_rate(
+    f_name text,
+    f_date date
+)
+RETURNS numeric
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    recovery numeric;
+BEGIN
+
+    SELECT gc.recovered * 100.0 / gc.confirmed
+    INTO recovery
+    FROM country c
+    JOIN global_covid_stats gc
+        ON gc.country_id = c.country_id
+    WHERE c.name = f_name
+      AND gc.report_date = f_date;
+
+    RETURN recovery;
+
+END;
+$$;
