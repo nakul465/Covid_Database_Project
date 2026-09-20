@@ -412,3 +412,45 @@ select SUM(total_vaccinated.mx)*100/SUM(total_vaccinated.pop)
 from total_vaccinated;
 
 
+-- Indian State Wise Analysis:
+
+-- 1. Total State-wise Confirmed Cases
+
+SELECT s.name , MAX(cs.confirmed)
+FROM state AS s
+JOIN covid_case_stats cs
+    ON cs.state_id=s.state_id
+GROUP BY s.name;
+
+-- 2. Maximum Active cases State-wise till date
+
+SELECT s.name , MAX(cs.active_cases)
+FROM state AS s
+JOIN covid_case_stats cs
+    ON cs.state_id=s.state_id
+WHERE cs.report_date <= '2020-10-16'
+GROUP BY s.name;
+
+-- 3. Max Per Day Confirmed cases in States
+
+SELECT cs.report_date, MAX(cs.confirmed) 
+FROM covid_case_stats AS cs
+GROUP BY cs.report_date
+ORDER BY cs.report_date;
+
+-- 4. Max Per Day Death cases in States
+
+SELECT cs.report_date, MAX(cs.deaths) 
+FROM covid_case_stats AS cs
+GROUP BY cs.report_date
+ORDER BY cs.report_date;
+
+-- 5. State-wise Mortality Rate
+
+SELECT s.name ,SUM(cs.new_deaths)*100.0/SUM(cs.new_confirmed)
+FROM state AS s
+JOIN covid_case_stats cs
+    ON cs.state_id=s.state_id
+GROUP BY s.name,s.population;
+
+
